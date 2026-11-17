@@ -1,6 +1,6 @@
 # Updating and recovery
 
-## Routine OpenWrt update
+## Routine OpenWrt update (validate before relying on it)
 
 Build a new revision and copy its `*-squashfs-sysupgrade.bin` file to the
 router. From OpenWrt, first validate without changing flash:
@@ -15,9 +15,11 @@ If the check succeeds, retain configuration:
 sysupgrade /tmp/openwrt-mediatek-filogic-keenetic_kn-4010-squashfs-sysupgrade.bin
 ```
 
-To intentionally start with defaults, add `-n`. This update path writes only
-the OpenWrt `kernel` and `ubi` partitions within `firmware_1`; it must never
-touch `firmware_2`.
+To intentionally start with defaults, add `-n`. The image metadata and upgrade
+layout are configured for the OpenWrt `kernel` and `ubi` partitions within
+`firmware_1`; it must never touch `firmware_2`. The first real `sysupgrade` on
+this port is still to be validated on hardware, so retain UART access and the
+raw-slot image until that test has completed.
 
 ## UART/TFTP update path
 

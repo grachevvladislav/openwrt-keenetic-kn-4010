@@ -42,12 +42,14 @@ is set by `tftpboot`; do not replace it with a guessed number.
 ```text
 nand erase 0x500000 0x3700000
 nand write 0x46000000 0x500000 ${filesize}
+crc32 0x46000000 ${filesize}
 nand read 0x47000000 0x500000 ${filesize}
-cmp.b 0x46000000 0x47000000 ${filesize}
+crc32 0x47000000 ${filesize}
 iminfo 0x47000000
 ```
 
-The comparison must succeed and `iminfo` must again identify the OpenWrt FIT.
+The two `crc32` values must be identical and `iminfo` must again identify the
+OpenWrt FIT.
 
 ## Select OpenWrt as the active slot
 
