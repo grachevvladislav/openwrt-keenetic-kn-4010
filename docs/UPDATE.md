@@ -1,6 +1,11 @@
 # Updating and recovery
 
-## Routine OpenWrt update (validate before relying on it)
+## Routine OpenWrt update (no UART while OpenWrt boots)
+
+When OpenWrt is reachable, update through **LuCI → System → Backup / Flash
+Firmware** or over SSH. Upload only the `*-squashfs-sysupgrade.bin` image and
+leave **Keep settings** enabled. UART is not needed for this normal path; it is
+the recovery method if an update is interrupted or the device stops booting.
 
 Build a new revision and copy its `*-squashfs-sysupgrade.bin` file to the
 router. From OpenWrt, first validate without changing flash:
@@ -20,6 +25,20 @@ layout are configured for the OpenWrt `kernel` and `ubi` partitions within
 `firmware_1`; it must never touch `firmware_2`. The first real `sysupgrade` on
 this port is still to be validated on hardware, so retain UART access and the
 raw-slot image until that test has completed.
+
+## What is retained
+
+With the default `sysupgrade` invocation, OpenWrt backs up and restores its
+configuration, including `/etc/config`, SSH keys and the files listed in
+`/etc/sysupgrade.conf`. It does **not** preserve arbitrary files outside that
+set.
+
+Extra packages are not automatically copied or reinstalled: the root filesystem
+is replaced. `sysupgrade -k` only puts a list of installed packages into the
+backup; it does not restore them. Put required packages in the image build
+configuration, or keep an explicit package list and install it again after the
+update. This is especially important for packages with kernel-module
+dependencies.
 
 ## UART/TFTP update path
 
