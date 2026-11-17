@@ -1,9 +1,9 @@
 diff --git a/target/linux/mediatek/dts/mt7981b-keenetic-kn-4010.dts b/target/linux/mediatek/dts/mt7981b-keenetic-kn-4010.dts
 new file mode 100644
-index 0000000..471e62b
+index 0000000..6ce6344
 --- /dev/null
 +++ b/target/linux/mediatek/dts/mt7981b-keenetic-kn-4010.dts
-@@ -0,0 +1,179 @@
+@@ -0,0 +1,178 @@
 +// SPDX-License-Identifier: GPL-2.0-only OR MIT
 +
 +/dts-v1/;
@@ -69,7 +69,6 @@ index 0000000..471e62b
 +		reg = <0>;
 +		phy-mode = "sgmii";
 +		phy-handle = <&en8801s>;
-+		managed = "in-band-status";
 +		label = "lan";
 +		nvmem-cells = <&macaddr_factory_4>;
 +		nvmem-cell-names = "mac-address";
