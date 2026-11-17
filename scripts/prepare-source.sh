@@ -6,6 +6,11 @@ repo_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 src_dir=${1:-"$PWD/openwrt-25.12"}
 base_commit=60c494ad065fe3fcaeadf0e9ff4a8a2dc6e6be43
 
+if [ "$(uname -s)" = Darwin ]; then
+  echo "OpenWrt must be built in a Linux VM, container, or CI; macOS system make/awk/bash are unsupported." >&2
+  exit 2
+fi
+
 if [ ! -d "$src_dir/.git" ]; then
   # Keep the complete commit graph, but fetch blobs on demand. This makes a
   # clean checkout much smaller while still allowing a pinned detached commit.

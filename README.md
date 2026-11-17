@@ -38,8 +38,9 @@ passwords or generated images are committed.
 
 ## Quick build
 
-On Linux (or a case-sensitive Linux VM/container), install the normal OpenWrt
-build prerequisites, then run:
+Build on Linux, a Linux VM/container, or GitHub Actions. macOS system tools are
+not supported by OpenWrt 25.12. Install the normal OpenWrt build prerequisites,
+then run:
 
 ```sh
 git clone https://github.com/grachevvladislav/openwrt-keenetic-kn-4010.git
