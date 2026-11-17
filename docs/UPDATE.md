@@ -1,8 +1,10 @@
 # Updating and recovery
 
+[Русская версия](ОБНОВЛЕНИЕ.md)
+
 ## Routine OpenWrt update (no UART while OpenWrt boots)
 
-When OpenWrt is reachable, update through **LuCI → System → Backup / Flash
+When OpenWrt is reachable, update through **LuCI: System > Backup / Flash
 Firmware** or over SSH. Upload only the `*-squashfs-sysupgrade.bin` image and
 leave **Keep settings** enabled. UART is not needed for this normal path; it is
 the recovery method if an update is interrupted or the device stops booting.

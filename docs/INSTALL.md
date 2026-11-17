@@ -1,5 +1,7 @@
 # First installation
 
+[Русская версия](УСТАНОВКА.md)
+
 This method writes OpenWrt to `firmware_1` only and leaves the factory
 KeeneticOS image in `firmware_2` intact. It requires a 3.3 V TTL UART adapter
 and a TFTP server on a computer connected to the router's Ethernet port.
@@ -8,7 +10,8 @@ and a TFTP server on a computer connected to the router's Ethernet port.
 
 - Use **3.3 V TTL**, never RS-232 and never connect the adapter's 3.3 V or 5 V
   power lead to the router.
-- Connect `GND ↔ GND`, `adapter RX ↔ router TX`, `adapter TX ↔ router RX`.
+- Connect `GND` to `GND`, adapter `RX` to router `TX`, and adapter `TX` to
+  router `RX`.
 - Do not erase or write `Preloader`, `U-Boot`, `U-Config`, `RF-EEPROM`,
   `RF-EEPROM_res`, `reserved`, or `firmware_2`.
 - A power loss during an erase/write can leave `firmware_1` unusable. The
