@@ -1,0 +1,97 @@
+diff --git a/target/linux/mediatek/files/drivers/net/phy/en8801sc.c b/target/linux/mediatek/files/drivers/net/phy/en8801sc.c
+index 08774e3..79a2a63 100644
+--- a/target/linux/mediatek/files/drivers/net/phy/en8801sc.c
++++ b/target/linux/mediatek/files/drivers/net/phy/en8801sc.c
+@@ -448,17 +448,23 @@ static int en8801s_phase1_init(struct phy_device *phydev)
+ 	priv->count = 1;
+ 	msleep(1000);
+ 
+-	retry = MAX_OUI_CHECK;
++	/* Some boards expose the PBUS window at the PHY address itself. */
++	retry = MAX_OUI_CHECK + 1;
+ 	while (1) {
+ 		pbus_data = airoha_pbus_read(mbus, pbus_addr,
+ 				EN8801S_RG_ETHER_PHY_OUI);      /* PHY OUI */
++		dev_info(dev, "PBUS probe: MDIO 0x%x, PBUS 0x%x, OUI 0x%lx\n",
++			 phydev->mdio.addr, pbus_addr, pbus_data);
+ 		if (pbus_data == EN8801S_PBUS_OUI) {
+ 			dev_info(dev, "PBUS addr 0x%x: Start initialized.\n",
+ 					pbus_addr);
+ 			break;
+ 		}
+-		pbus_addr = phydev_pbus_addr(phydev);
+-		if (0 == --retry) {
++		if (--retry == 2)
++			pbus_addr = phydev_pbus_addr(phydev);
++		else if (retry == 1)
++			pbus_addr = phydev_phy_addr(phydev);
++		else if (retry == 0) {
+ 			dev_err(dev, "Probe fail !\n");
+ 			return 0;
+ 		}
+diff --git a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
+index b60e306..d879219 100644
+--- a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
++++ b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
+@@ -175,6 +175,7 @@ mediatek_setup_interfaces()
+ 		;;
+ 	comfast,cf-wr632ax|\
+ 	comfast,cf-wr632ax-ubootmod|\
++	keenetic,kn-4010|\
+ 	keenetic,kn-3911|\
+ 	smartrg,sdg-8622|\
+ 	smartrg,sdg-8632|\
+diff --git a/target/linux/mediatek/filogic/config-6.12 b/target/linux/mediatek/filogic/config-6.12
+index 1fae94f..a0c7ff4 100644
+--- a/target/linux/mediatek/filogic/config-6.12
++++ b/target/linux/mediatek/filogic/config-6.12
+@@ -1,6 +1,7 @@
+ CONFIG_64BIT=y
+ # CONFIG_AHCI_MTK is not set
+-CONFIG_AIROHA_EN8801SC_PHY=y
++CONFIG_AIROHA_AN8801_PHY=y
++# CONFIG_AIROHA_EN8801SC_PHY is not set
+ CONFIG_AIR_AN8855_PHY=y
+ CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS=y
+ CONFIG_ARCH_CORRECT_STACKTRACE_ON_KRETPROBE=y
+diff --git a/target/linux/mediatek/image/filogic.mk b/target/linux/mediatek/image/filogic.mk
+index 347169c..9c07276 100644
+--- a/target/linux/mediatek/image/filogic.mk
++++ b/target/linux/mediatek/image/filogic.mk
+@@ -2238,7 +2238,7 @@ define Device/keenetic_kn-3911
+   DEVICE_MODEL := KN-3911
+   DEVICE_DTS := mt7981b-keenetic-kn-3911
+   DEVICE_DTS_DIR := ../dts
+-  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware kmod-phy-airoha-en8811h
++  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
+   UBINIZE_OPTS := -E 5
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+@@ -2253,6 +2253,27 @@ define Device/keenetic_kn-3911
+ endef
+ TARGET_DEVICES += keenetic_kn-3911
+ 
++define Device/keenetic_kn-4010
++  DEVICE_VENDOR := Keenetic
++  DEVICE_MODEL := Racer KN-4010
++  DEVICE_DTS := mt7981b-keenetic-kn-4010
++  DEVICE_DTS_DIR := ../dts
++  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
++  UBINIZE_OPTS := -E 5
++  BLOCKSIZE := 128k
++  PAGESIZE := 2048
++  KERNEL_SIZE := 6144k
++  # One 55 MiB firmware slot. firmware_2 stays stock for recovery.
++  IMAGE_SIZE := 56320k
++  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb | append-squashfs4-fakeroot
++  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
++  IMAGES += raw-slot.bin
++  # Raw, unwrapped image for direct placement at the start of firmware_1.
++  # Do not use the Keenetic web-UI header here: U-Boot expects a FIT at byte 0.
++  IMAGE/raw-slot.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | check-size
++endef
++TARGET_DEVICES += keenetic_kn-4010
++
+ define Device/konka_komi-a31
+   DEVICE_VENDOR := Konka
+   DEVICE_MODEL := KOMI A31

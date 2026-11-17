@@ -1,0 +1,8 @@
+# OpenWrt build trees and generated images are intentionally not versioned.
+openwrt-*/
+bin/
+dl/
+*.bin
+*.img
+*.gz
+.DS_Store

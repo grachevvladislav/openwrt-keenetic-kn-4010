@@ -1,0 +1,8 @@
+SPDX-License-Identifier: GPL-2.0-only
+
+This repository contains patches for OpenWrt and an Airoha PHY driver.
+Unless an individual file states otherwise, it is distributed under the
+GNU General Public License, version 2 only.
+
+The full license text is available at:
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
